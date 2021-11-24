@@ -1,4 +1,5 @@
 #include <ftw.h>
+#include <pwd.h>
 #include <string.h>
 #include <stdio.h>
 #include <sys/stat.h>
@@ -17,8 +18,17 @@ int list(const char *name, const struct stat *status, int type) {
    if(type == FTW_NS)
       return 0;
 
-   if(type == FTW_F)
-      printf("0%3o\t%s\n", status->st_mode&0777, name);
+   if(type == FTW_F){
+      uid_t user_id = status->st_uid;
+      struct passwd *pws;
+      pws = getpwuid(user_id);
+      char *user_name = pws->pw_name;
+
+      printf("0%3o\t%s\t%s\n", status->st_mode & 0777, name, user_name);
+
+   }
+      
+      
  
    if(type == FTW_D && strcmp(".", name) != 0)
       printf("0%3o\t%s/\n", status->st_mode&0777, name);
