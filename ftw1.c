@@ -22,7 +22,7 @@ int list(const char *name, const struct stat *status, int type) {
    if(type == FTW_NS)
       return 0;
    
-   // if file is hidden, return 
+   // if file is hidden or originating in a hidden folder, return 
    if(name[2] == '.')
       return 0;
 
@@ -33,7 +33,9 @@ int list(const char *name, const struct stat *status, int type) {
       uid_t user_id = status->st_uid;
       gid_t gid = status->st_gid;
       off_t size = status->st_size;
+      size_t path_len = strlen(name);
       char *permissions = "----------";
+      char file_name[path_len];
 
       // get user name
       struct passwd *pws = getpwuid(user_id);
@@ -43,7 +45,14 @@ int list(const char *name, const struct stat *status, int type) {
       struct group *grp = getgrgid(gid);
       char *group_name = grp->gr_name;
 
-      printf("0%3o\t%s\t%s\t%s\n", status->st_mode & 0777, name, user_name, group_name);
+      //getting file name
+      int name_start_index = 0;
+      for(size_t i = path_len-1; name[i] != '/' ; --i){
+         name_start_index++;
+      }
+      name_start_index = path_len - name_start_index;
+      strncpy(file_name, name+name_start_index, path_len-1);
+      printf("0%3o\t%s\t%s\t%s\n", status->st_mode & 0777, file_name, user_name, group_name);
    }
       
       
@@ -67,3 +76,8 @@ int list(const char *name, const struct stat *status, int type) {
 // FTW_SL   ,,    ,,   ,, ,, symbolic link
 // FTW_NS   The object is NOT a symbolic link and is one for 
 //          which stat() could not be executed
+
+
+/*
+   condition ? if true : else
+*/
