@@ -1,0 +1,9 @@
+{
+    "files.associations": {
+        "string": "c",
+        "iosfwd": "c",
+        "string.h": "c",
+        "pwd.h": "c",
+        "stdio.h": "c"
+    }
+}
