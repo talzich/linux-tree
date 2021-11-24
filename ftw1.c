@@ -32,4 +32,3 @@ int list(const char *name, const struct stat *status, int type) {
 // FTW_SL   ,,    ,,   ,, ,, symbolic link
 // FTW_NS   The object is NOT a symbolic link and is one for 
 //          which stat() could not be executed
-
