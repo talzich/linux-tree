@@ -1,5 +1,8 @@
 # macOS files
 .DS_Store
 
+# VSCode files
+.vscode/
+
 # hidden odt files
 ~$task2.odt
