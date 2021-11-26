@@ -6,3 +6,8 @@
 
 # hidden odt files
 ~$task2.odt
+
+# output files
+*.out
+ftw1
+ftw2
