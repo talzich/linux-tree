@@ -69,7 +69,7 @@ int list(const char *name, const struct stat *status, int type) {
          int name_begin_index = path_len - file_name_len;
          strncpy(file_name, name+name_begin_index, path_len-1);
       }
-      printf("[%s %s %s\t\t%ld]  %s\n", permissions, user_name, group_name, size, name);
+      printf("[%s %s %s\t\t%lld]  %s\n", permissions, user_name, group_name, size, name);
       
    }
    return 0;

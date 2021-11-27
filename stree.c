@@ -6,19 +6,17 @@
 #include <sys/types.h>
 #include <grp.h>
 
-int list(const char *name, const struct stat *status, int type);
-int list_1(const char *name, const struct stat *status, int type);
-
+int list(const char *name, const struct stat *status, int type, struct FTW *ftwb);
 int main(int argc, char *argv[])
 {
     if (argc == 1)
-        ftw(".", list, 1);
+        nftw(".", list, 1, 0);
     else
-        ftw(argv[1], list, 1);
+        nftw(argv[1], list, 1, 0);
     return 0;
 }
 
-int list_1(const char *name, const struct stat *status, int type)
+int list(const char *name, const struct stat *status, int type, struct FTW *ftwb)
 {
 
     // if file is of unknown type, return
@@ -71,9 +69,19 @@ int list_1(const char *name, const struct stat *status, int type)
         i = path_len-1;
         int diff = path_len-name_len;
         strcpy(file_name, name + diff);
-
+        
+        // get level of indentation
+        int level = ftwb->level;
+        if(level == 0){
+            printf("%s\n", file_name);
+            return 0;
+        }
+        i = 0;
+        while(i < level){
+            printf("\t");
+            ++i;
+        }
         printf("[%s %s %s\t\t%lld]  %s\n", permissions, user_name, group_name, size, file_name);
-
     }
     return 0;
 }
