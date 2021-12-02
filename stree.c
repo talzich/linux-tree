@@ -1,6 +1,5 @@
 
 #pragma GCC diagnostic ignored "-Wdiscarded-qualifiers"
-#pragma GCC diagnostic ignored "-Wunused-variable"
 
 #define _XOPEN_SOURCE 600 /* Get nftw() */
 
@@ -19,16 +18,10 @@ int directorys = 0;
 int files = 0;
 
 int check = 0;
-
-int previous_base = 0;
 int previous_level = 0;
 
-// int max_level = 0;
+/* ├ ─ └ │ */  // Spcial characters for tree like print
 
-int current_dir_total = 0;
-int current_dir_files = 0;
-int current_dir_directorys = 0;
-  
 #define WHITE printf("\033[0;37m");
 #define BLUE  printf("\033[1;34m");  
 #define GREEN printf("\033[1;32m");
@@ -60,28 +53,6 @@ char file_type_unmask(mode_t bitmasks)
     return '-';
 }
 
-int directory_counter(const char *name, const struct stat *status, int type, struct FTW *ftwb)
-{  
-    // if file is of unknown type, return
-    if (type == FTW_NS) return 0;
-    // if file is hidden or originating in a hidden folder, return
-    if (name[2] == '.') return 0;
-
-
-    char file_type = file_type_unmask(status->st_mode);
-    // printf("%d, ",ftwb->level);
-    if (ftwb->level != 0)
-    {
-        if (file_type == 'd'){ current_dir_directorys++; }
-        else { current_dir_files++;}
-    } 
-        // get level of indentation
-        if (ftwb->level == 0){ return 0; }
-        current_dir_total++; 
-        
-    return 0;
-}
-
 int count_all(const char *name, const struct stat *status, int type, struct FTW *ftwb)
 {  
     // if file is of unknown type, return
@@ -93,8 +64,8 @@ int count_all(const char *name, const struct stat *status, int type, struct FTW 
 
     // get level of indentation
     if (ftwb->level == 0){ return 0; }
-    total++; 
-        
+
+    total++;    
     return 0;
 }
 
@@ -151,33 +122,31 @@ int list(const char *name, const struct stat *status, int type, struct FTW *ftwb
             else if (total == 1){ printf("└── ");}
             else{
                 
-                if (ftwb->base == previous_base)
-                {
-                    /* code */
-                }
-                
                 for (int i = 1; i < ftwb->level; i++){ printf("│   ");}
 
-                if (previous_level == 0 && total  > (directorys + files)){ printf("├── ");}
-                else if (ftwb->level  <  previous_level ){ printf("└── ");}
-                else if ((directorys + files) == total - 1){ printf("└── ");}
-                else{ printf("├── ");}
+                if (previous_level == 0 && total  > (directorys + files))
+                    { printf("├── ");}
+                else if (ftwb->level  <  previous_level )
+                    { printf("└── ");}
+                else if ((directorys + files) == total - 1)
+                    { printf("└── ");}
+                else
+                    { printf("├── ");}
             }
         }
     
-        // printf("%d, ", ftwb->base);
-        // printf("%d, ", previous_base);
+    /*  // Used for debugging 
 
-        // printf("\033[1;31m%d, ",current_dir_total);
-        // printf("\033[1;33m%d, ",current_dir_directorys);
-        // printf("\033[1;34m%d, ",current_dir_files);
-        // printf("\033[0;32m%d, ",total);
-        // printf("\033[0;35mf=%d, ", ftwb->level);
-        // printf("p=%d\033[0;37m", previous_level);
+        printf("\033[1;31m%d, ",current_dir_total);
+        printf("\033[1;33m%d, ",current_dir_directorys);
+        printf("\033[1;34m%d, ",current_dir_files);
+        printf("\033[0;32m%d, ",total);
+        printf("\033[0;35mf=%d, ", ftwb->level);
+        printf("p=%d\033[0;37m", previous_level);
+    */
 
         // get level of indentation
         int level = previous_level = ftwb->level;
-        previous_base = ftwb->base;
         if (level != 0)
         {
             if (permissions[0] == 'd'){ directorys++; }
@@ -192,6 +161,8 @@ int list(const char *name, const struct stat *status, int type, struct FTW *ftwb
             return 0; 
         }
         printf("[%s %s %s\t\t%ld]  ", permissions, user_name, group_name, size);
+
+        // pretty print [different color for some types] 
         if (permissions[9] == 'x')
         {
             switch (permissions[0])
@@ -226,9 +197,12 @@ int main(int argc, char *argv[])
 {   
 
     char* dir;
-    if (argc == 1){dir = ".";}
-    else if (argc == 2){dir = argv[1];}
-    else{ printf("worng usage: %s <directory> OR %s \n", argv[0], argv[0]);}
+    if (argc == 1)
+        {dir = ".";}
+    else if (argc == 2)
+        {dir = argv[1];}
+    else
+        { printf("worng usage: %s <directory> OR %s \n", argv[0], argv[0]);}
 
     nftw(dir, count_all, 10, flags);
     nftw(dir, list, 10, flags);
@@ -247,11 +221,4 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-/*
 
-├ 
-─
-└
-│
-
-*/
