@@ -22,10 +22,11 @@ int previous_level = 0;
 
 /* ├ ─ └ │ */  // Spcial characters for tree like print
 
-#define WHITE printf("\033[0;37m");
-#define BLUE  printf("\033[1;34m");  
-#define GREEN printf("\033[1;32m");
-#define CYAN  printf("\033[1;36m");
+#define WHITE    printf("\033[0;37m");
+#define BLUE     printf("\033[1;34m");  
+#define GREEN    printf("\033[1;32m");
+#define CYAN     printf("\033[1;36m");
+#define YELLOW   printf("\033[1;33m");
 
 #define RESET WHITE
 
@@ -60,8 +61,6 @@ int count_all(const char *name, const struct stat *status, int type, struct FTW 
     // if file is hidden or originating in a hidden folder, return
     if (name[2] == '.') return 0;
     
-    char file_type = file_type_unmask(status->st_mode);
-
     // get level of indentation
     if (ftwb->level == 0){ return 0; }
 
@@ -117,6 +116,7 @@ int list(const char *name, const struct stat *status, int type, struct FTW *ftwb
 
 
         if (ftwb->level != 0 ){
+            YELLOW
             check++;
             if (check == 1 && total > 1){ printf("├── ");}
             else if (total == 1){ printf("└── ");}
@@ -133,13 +133,11 @@ int list(const char *name, const struct stat *status, int type, struct FTW *ftwb
                 else
                     { printf("├── ");}
             }
+            RESET
         }
     
     /*  // Used for debugging 
 
-        printf("\033[1;31m%d, ",current_dir_total);
-        printf("\033[1;33m%d, ",current_dir_directorys);
-        printf("\033[1;34m%d, ",current_dir_files);
         printf("\033[0;32m%d, ",total);
         printf("\033[0;35mf=%d, ", ftwb->level);
         printf("p=%d\033[0;37m", previous_level);
